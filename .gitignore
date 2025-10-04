@@ -1,6 +1,13 @@
-main_msq
-main_pipe
-main_shm
+.vscode/
 
+# 编译过程中生成的目标文件
+*.o
+
+# 单进程石头剪刀布
+main_msq  
+main_pipe
+
+# 多进程石头剪刀布
 player
 referee
+

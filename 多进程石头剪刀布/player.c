@@ -29,16 +29,12 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Usage: %s <player_id in {0, 1}>\n", argv[0]);
     }
 
-    // 玩家编号 0 或 1
     int player_id = atoi(argv[1]);
-    key = ftok("./referee.c", 'A');
-    if ((msq_id = msgget(key, 0666)) == -1)
-    {
-        printf("裁判进程未启动\n");
-        exit(1);
-    }
 
-    printf("成功连接到消息队列，ID: %d\n", msq_id);
+    // 获取消息队列
+    if ((msq_id = get_game_msgq()) == -1) {
+        return 1;
+    }
 
     MSG snd_msg, rcv_msg;
 

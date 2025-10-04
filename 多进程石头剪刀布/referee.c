@@ -8,6 +8,7 @@
 #include <time.h>
 #include <sys/wait.h>
 #include <sys/msg.h>
+#include "defs.h"
 
 // 定义消息结构体
 typedef struct
@@ -36,17 +37,18 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "Usage: %s number\n", argv[0]);
     }
-
+    
+    printf("裁判进程启动\n");
+    printf("当前工作目录: %s\n", get_working_dir());
+    
     int T = atoi(argv[1]);
-    key = ftok("./referee.c", 'A');
-    if ((msq_id = msgget(key, 0666)) != -1) {
-        msgctl(msq_id, IPC_RMID, 0);
-    }
+    
+    // 初始化随机种子
+    srand(time(NULL));
+    
     // 创建消息队列
-    if ((msq_id = msgget(key, IPC_CREAT | IPC_EXCL | 0777)) < 0)
-    { // 0777是八进制数字
-        fprintf(stderr, "msgget error!\n");
-        exit(1);
+    if ((msq_id = create_game_msgq()) == -1) {
+        return 1;
     }
 
     printf("===== 石头剪刀布对战游戏 =====\n");
@@ -75,7 +77,7 @@ int main(int argc, char *argv[])
     }
 
     // 删除消息队列
-    msgctl(msq_id, IPC_RMID, 0);
+    cleanup_msgq();
 
     // 输出最终结果
     printf("\n=== 最终结果 ===\n");
